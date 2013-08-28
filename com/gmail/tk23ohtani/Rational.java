@@ -6,7 +6,6 @@ package com.gmail.tk23ohtani;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 
 /**
  * @author ohtani
@@ -14,6 +13,7 @@ import javax.swing.border.EtchedBorder;
  */
 public class Rational extends JFrame {
 
+	private final static int DENOMINATOR = 500;
 	private final static int DEPTH = 20;
 	JLabel[] tx = new JLabel[DEPTH];
 	JTextField text1, text2;
@@ -63,14 +63,16 @@ public class Rational extends JFrame {
 	private void calc(double target, double margin) {
 		double	dval, diff;
 		double [] diffs = new double[DEPTH];
+		int [] denoms = new int[DEPTH];
 		for (int l=0; l<DEPTH; l++)
 		{
 			diffs[l] = 10.0;
+			denoms[l] = DENOMINATOR;
 			tx[l].setText("");
 
 		}
 		int		i, j, sta_val, stp_val;
-		for (j=2; j<200; j++)
+		for (j=2; j<DENOMINATOR; j++)
 		{
 			sta_val = (((int)target) - 1) * j;
 			stp_val = (((int)target) + 1) * j;
@@ -80,6 +82,7 @@ public class Rational extends JFrame {
 				diff = Math.abs(target - dval);
 				if (margin > diff)
 				{
+					boolean isFoundSmallRational = false;
 					for (int l=0; l<DEPTH; l++)
 					{
 						if (diffs[l] == diff)
@@ -88,16 +91,23 @@ public class Rational extends JFrame {
 						}
 						if (diffs[l] > diff)
 						{
+							if (isFoundSmallRational) break;
 							for (int m=DEPTH-1; l<m; m--)
 							{
 								tx[m].setText(tx[m-1].getText());
-								diffs[m] = diffs[m-1]; 
+								diffs[m] = diffs[m-1];
+								denoms[m] = denoms[m-1];
 							}
 							diffs[l] = diff;
+							denoms[l] = j;
 							String str;
 							str = i + "/" + j + "=" + dval + "(" + diff + ")";
 							tx[l].setText(str);
 							break;
+						}
+						if (denoms[l] < j)
+						{
+							isFoundSmallRational = true;
 						}
 					}
 				}
